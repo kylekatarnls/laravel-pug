@@ -1,4 +1,6 @@
-<?php namespace Bkwld\LaravelPug;
+<?php
+
+namespace Bkwld\LaravelPug;
 
 // Dependencies
 use Pug\Pug;
@@ -26,18 +28,18 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     public function register()
     {
         // Version specific registering
-        if ($this->version() == 5) {
+        if ($this->version() >= 5) {
             $this->registerLaravel5();
         }
 
         // Bind the package-configued Pug instance
-        $this->app->singleton('laravel-pug.pug', function($app) {
+        $this->app->singleton('laravel-pug.pug', function() {
             $config = $this->getConfig();
             $pug = new Pug($config);
             // Determine the cache dir if not configured
             $pug->setCustomOption(
                 'defaultCache',
-                storage_path($this->version() == 5 ? '/framework/views' : '/views')
+                storage_path($this->version() >= 5 ? '/framework/views' : '/views')
             );
 
             return $pug;
@@ -152,7 +154,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function getConfig()
     {
-        $key = $this->version() == 5 ? 'laravel-pug' : 'laravel-pug::config';
+        $key = $this->version() >= 5 ? 'laravel-pug' : 'laravel-pug::config';
 
         return $this->app->make('config')->get($key);
     }

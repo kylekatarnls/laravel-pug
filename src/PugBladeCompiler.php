@@ -1,4 +1,6 @@
-<?php namespace Bkwld\LaravelPug;
+<?php
+
+namespace Bkwld\LaravelPug;
 
 // Dependencies
 use Illuminate\View\Compilers\BladeCompiler;
