@@ -3,9 +3,9 @@
 namespace Bkwld\LaravelPug;
 
 // Dependencies
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\Compiler;
 use Illuminate\View\Compilers\CompilerInterface;
-use Illuminate\Filesystem\Filesystem;
 use Pug\Pug;
 
 class PugCompiler extends Compiler implements CompilerInterface

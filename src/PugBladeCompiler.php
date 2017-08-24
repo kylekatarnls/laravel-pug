@@ -23,7 +23,6 @@ class PugBladeCompiler extends BladeCompiler implements CompilerInterface
      * @param Pug        $pug
      * @param Filesystem $files
      * @param string     $cachePath
-     * @return void
      */
     public function __construct(Pug $pug, Filesystem $files)
     {
