@@ -1,0 +1,21 @@
+---
+engines:
+  duplication:
+    enabled: true
+    exclude_paths:
+    - "tests/"
+    - "config/"
+    - "src/config/"
+    config:
+      languages:
+      - php
+  fixme:
+    enabled: true
+  phpmd:
+    enabled: true
+    checks:
+      Naming/ShortVariable:
+        enabled: false
+ratings:
+  paths:
+  - "**.php"
