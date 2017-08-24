@@ -71,9 +71,13 @@ class PugBladeCompilerTest extends \PHPUnit_Framework_TestCase
         $path = realpath(__DIR__ . '/example.pug');
         $compiledPath = $compiler->getCompiledPath($path);
         $compiler->compile($path);
-        $contents = file_get_contents($compiledPath);
+        $sentence = 'By HTML syntax!';
+        ob_start();
+        include $compiledPath;
+        $contents = ob_get_contents();
+        ob_end_clean();
 
-        self::assertSame('<h1>Pug is there</h1><p><?php echo e($sentence); ?></p>', $contents);
+        self::assertSame('<h1>Pug is there</h1><p>By HTML syntax!</p>', $contents);
 
         // Cleanup
         if (file_exists($compiledPath)) {
