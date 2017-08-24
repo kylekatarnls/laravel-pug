@@ -6,3 +6,4 @@
 /.codeclimate.yml       export-ignore
 /*.md                   export-ignore
 /LICENSE                export-ignore
+/phpunit.xml            export-ignore
