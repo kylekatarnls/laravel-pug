@@ -3,9 +3,9 @@
 namespace Bkwld\LaravelPug;
 
 // Dependencies
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\View\Compilers\CompilerInterface;
-use Illuminate\Filesystem\Filesystem;
 use Pug\Pug;
 
 class PugBladeCompiler extends BladeCompiler implements CompilerInterface
@@ -20,9 +20,9 @@ class PugBladeCompiler extends BladeCompiler implements CompilerInterface
     /**
      * Create a new compiler instance.
      *
-     * @param  Pug $pug
-     * @param  \Illuminate\Filesystem\Filesystem  $files
-     * @param  string  $cachePath
+     * @param Pug        $pug
+     * @param Filesystem $files
+     * @param string     $cachePath
      * @return void
      */
     public function __construct(Pug $pug, Filesystem $files)
@@ -38,7 +38,8 @@ class PugBladeCompiler extends BladeCompiler implements CompilerInterface
     /**
      * Determine if the view at the given path is expired.
      *
-     * @param  string  $path
+     * @param string $path
+     *
      * @return bool
      */
     public function isExpired($path)
@@ -49,22 +50,27 @@ class PugBladeCompiler extends BladeCompiler implements CompilerInterface
     /**
      * Compile the view at the given path.
      *
-     * @param  string  $path
+     * @param string $path
+     *
      * @return void
      */
-    public function compile($path)
+    public function compile($path = null)
     {
+        if ($path) {
+            $this->setPath($path);
+        }
+
         $this->footer = array();
 
         if ($this->cachePath) {
             // First compile the Pug syntax
-            $contents = $this->pug->compile($this->files->get($path), $path);
+            $contents = $this->pug->compile($this->files->get($this->getPath()), $path);
 
             // Then the Blade syntax
             $contents = $this->compileString($contents);
 
             // Save
-            $this->files->put($this->getCompiledPath($path), $contents);
+            $this->files->put($this->getCompiledPath($this->getPath()), $contents);
         }
     }
 

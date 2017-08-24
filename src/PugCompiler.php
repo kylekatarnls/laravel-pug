@@ -18,9 +18,9 @@ class PugCompiler extends Compiler implements CompilerInterface
     /**
      * Create a new compiler instance.
      *
-     * @param  Pug         $pug
-     * @param  Filesystem  $files
-     * @param  string      $cachePath
+     * @param Pug        $pug
+     * @param Filesystem $files
+     * @param string     $cachePath
      */
     public function __construct(Pug $pug, Filesystem $files)
     {
@@ -35,7 +35,7 @@ class PugCompiler extends Compiler implements CompilerInterface
     /**
      * Determine if the view at the given path is expired.
      *
-     * @param  string  $path
+     * @param string $path
      *
      * @return bool
      */
@@ -47,7 +47,7 @@ class PugCompiler extends Compiler implements CompilerInterface
     /**
      * Compile the view at the given path.
      *
-     * @param  string  $path
+     * @param string $path
      *
      * @return void
      */
