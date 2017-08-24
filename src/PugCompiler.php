@@ -58,5 +58,4 @@ class PugCompiler extends Compiler implements CompilerInterface
             $this->files->put($this->getCompiledPath($path), $contents);
         }
     }
-
 }

@@ -72,5 +72,4 @@ class PugBladeCompiler extends BladeCompiler implements CompilerInterface
             $this->files->put($this->getCompiledPath($this->getPath()), $contents);
         }
     }
-
 }
