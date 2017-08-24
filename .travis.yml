@@ -41,10 +41,6 @@ matrix:
       env: LARAVEL_VERSION='5.4.*'
       dist: trusty
       sudo: required
-    - php: hhvm
-      env: LARAVEL_VERSION='5.5.*'
-      dist: trusty
-      sudo: required
 
 install:
   - travis_retry composer self-update
