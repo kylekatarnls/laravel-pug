@@ -11,8 +11,12 @@ engines:
       - php
   fixme:
     enabled: true
+    exclude_paths:
+    - "tests/"
   phpmd:
     enabled: true
+    exclude_paths:
+    - "tests/"
     checks:
       Naming/ShortVariable:
         enabled: false
