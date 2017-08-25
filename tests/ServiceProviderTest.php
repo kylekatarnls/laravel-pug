@@ -71,6 +71,12 @@ class MyApp implements Application
 
     public function getCachedPackagesPath()
     {
+        return '';
+    }
+
+    public function getCachedCompilePath()
+    {
+        return '';
     }
 
     public function bound($abstract)
