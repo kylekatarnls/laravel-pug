@@ -3,7 +3,6 @@
 namespace Phug\Test;
 
 use Bkwld\LaravelPug\PugBladeCompiler;
-use Illuminate\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Pug\Pug;
 
@@ -115,7 +114,7 @@ class PugBladeCompilerTest extends \PHPUnit_Framework_TestCase
 
         try {
             $compiler->compile('foo');
-        } catch (FileNotFoundException $exception) {
+        } catch (\Exception $exception) {
             //
         }
 

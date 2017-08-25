@@ -46,6 +46,11 @@ class Config implements ArrayAccess
     {
         unset($this->data[$offset]);
     }
+
+    public function __toString()
+    {
+        return strval($this->data['source']);
+    }
 }
 
 class LaravelTestApp implements Application, ArrayAccess
@@ -233,13 +238,28 @@ class Laravel3TestApp extends LaravelTestApp
     const VERSION = '3.0.0';
 }
 
+class Laravel4ServiceProvider extends ServiceProvider
+{
+    protected $currentPackage;
+
+    public function package($package)
+    {
+        $this->currentPackage = $package;
+    }
+
+    public function getCurrentPackage()
+    {
+        return $this->currentPackage;
+    }
+}
+
 class Laravel5ServiceProvider extends ServiceProvider
 {
     protected $mergedConfig;
 
     protected $pub;
 
-    public function mergeConfigFrom()
+    public function mergeConfigFrom($path, $key)
     {
         $this->mergedConfig = func_get_args();
     }
@@ -254,7 +274,7 @@ class Laravel5ServiceProvider extends ServiceProvider
         return $this->pub;
     }
 
-    public function publishes($pub)
+    public function publishes(array $pub, $group = NULL)
     {
         $this->pub = $pub;
     }
@@ -301,7 +321,7 @@ class ServiceProviderTest extends \PHPUnit_Framework_TestCase
     protected $app;
 
     /**
-     * @var ServiceProvider
+     * @var Laravel4ServiceProvider
      */
     protected $provider;
 
@@ -312,7 +332,7 @@ class ServiceProviderTest extends \PHPUnit_Framework_TestCase
             return new Filesystem();
         });
         Facade::setFacadeApplication($this->app);
-        $this->provider = new ServiceProvider($this->app);
+        $this->provider = new Laravel4ServiceProvider($this->app);
     }
 
     /**
@@ -343,6 +363,13 @@ class ServiceProviderTest extends \PHPUnit_Framework_TestCase
         $this->provider->register();
         /** @var \Pug\Pug $pug */
         $pug = $this->app->getSingleton('laravel-pug.pug');
+        $defaultCache = $pug->getOption('defaultCache');
+        if (!is_string($defaultCache)) {
+            $defaultCache = $defaultCache->get('source');
+        }
+        if ($defaultCache === 'path.storage') {
+            $defaultCache = '/views';
+        }
 
         self::assertInstanceOf('Pug\Pug', $pug);
         self::assertInstanceOf(
@@ -353,7 +380,7 @@ class ServiceProviderTest extends \PHPUnit_Framework_TestCase
             'Bkwld\LaravelPug\PugBladeCompiler',
             $this->app->getSingleton('Bkwld\LaravelPug\PugBladeCompiler')
         );
-        self::assertSame('path.storage', $pug->getOption('defaultCache')->get('source'));
+        self::assertSame('/views', $defaultCache);
     }
 
     /**
@@ -375,6 +402,14 @@ class ServiceProviderTest extends \PHPUnit_Framework_TestCase
         $provider->register();
         /** @var \Pug\Pug $pug */
         $pug = $app->getSingleton('laravel-pug.pug');
+        $defaultCache = $pug->getOption('defaultCache');
+        if (!is_string($defaultCache)) {
+            $defaultCache = $defaultCache->get('source');
+        }
+        if ($defaultCache === 'path.storage') {
+            $defaultCache = '/framework/views';
+        }
+        $configs = $provider->getMergedConfig();
 
         self::assertInstanceOf('Pug\Pug', $pug);
         self::assertInstanceOf(
@@ -385,8 +420,7 @@ class ServiceProviderTest extends \PHPUnit_Framework_TestCase
             'Bkwld\LaravelPug\PugBladeCompiler',
             $app->getSingleton('Bkwld\LaravelPug\PugBladeCompiler')
         );
-        self::assertSame('path.storage', $pug->getOption('defaultCache')->get('source'));
-        $configs = $provider->getMergedConfig();
+        self::assertSame('/framework/views', $defaultCache);
         self::assertCount(2, $configs);
         self::assertStringEndsWith('config.php', $configs[0]);
         self::assertSame('laravel-pug', $configs[1]);
@@ -440,6 +474,7 @@ class ServiceProviderTest extends \PHPUnit_Framework_TestCase
             ["pug","pug.php","jade","jade.php","pug.blade","pug.blade.php","jade.blade","jade.blade.php"],
             $view->getExtensions()
         );
+        self::assertSame('bkwld/laravel-pug', $this->provider->getCurrentPackage());
         self::assertInstanceOf('Illuminate\View\Engines\CompilerEngine', $resolver->get('pug'));
         self::assertInstanceOf('Illuminate\View\Engines\CompilerEngine', $resolver->get('pug.blade'));
 
