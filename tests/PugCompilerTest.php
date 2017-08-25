@@ -3,8 +3,24 @@
 namespace Phug\Test;
 
 use Bkwld\LaravelPug\PugCompiler;
+use Illuminate\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Pug\Pug;
+
+class PugCompilerGetAndSetPath extends PugCompiler
+{
+    protected $overriddenPath;
+
+    public function getPath()
+    {
+        return $this->overriddenPath;
+    }
+
+    public function setPath($path)
+    {
+        $this->overriddenPath = $path;
+    }
+}
 
 /**
  * @coversDefaultClass \Bkwld\LaravelPug\PugCompiler
@@ -85,5 +101,64 @@ class PugCompilerTest extends \PHPUnit_Framework_TestCase
             unlink($compiledPath);
             clearstatcache();
         }
+    }
+
+    /**
+     * @covers ::compile
+     */
+    public function testGetAndSetPath()
+    {
+        $pug = new Pug([
+            'defaultCache' => sys_get_temp_dir(),
+        ]);
+        $compiler = new PugCompilerGetAndSetPath($pug, new Filesystem());
+        $compiledPath = $compiler->getCompiledPath('foo');
+
+        try {
+            $compiler->compile('foo');
+        } catch (FileNotFoundException $exception) {
+            //
+        }
+
+        // Cleanup
+        if (file_exists($compiledPath)) {
+            unlink($compiledPath);
+            clearstatcache();
+        }
+
+        self::assertSame('foo', $compiler->getPath());
+
+        $path = realpath(__DIR__ . '/example.pug');
+        $compiledPath = $compiler->getCompiledPath($path);
+        $compiler->setPath($path);
+        $compiler->compile(null);
+
+        $sentence = 'By HTML syntax!';
+        ob_start();
+        include $compiledPath;
+        $contents = ob_get_contents();
+        ob_end_clean();
+
+        self::assertSame('<h1>Pug is there</h1><p>{{ $sentence }}</p>', $contents);
+
+        // Cleanup
+        if (file_exists($compiledPath)) {
+            unlink($compiledPath);
+            clearstatcache();
+        }
+    }
+
+    /**
+     * @covers                   ::compile
+     * @expectedException        \InvalidArgumentException
+     * @expectedExceptionMessage Missing path argument.
+     */
+    public function testCompilePathException()
+    {
+        $pug = new Pug([
+            'defaultCache' => sys_get_temp_dir(),
+        ]);
+        $compiler = new PugCompiler($pug, new Filesystem());
+        $compiler->compile(null);
     }
 }
