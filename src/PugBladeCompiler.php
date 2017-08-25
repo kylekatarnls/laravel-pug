@@ -28,11 +28,11 @@ class PugBladeCompiler extends BladeCompiler implements CompilerInterface
     public function __construct(Pug $pug, Filesystem $files)
     {
         $this->pug = $pug;
-        $this->files = $files;
-        $this->cachePath = $pug->getOption('cache');
-        if (!is_string($this->cachePath)) {
-            $this->cachePath = $pug->getOption('defaultCache');
+        $cachePath = $pug->getOption('cache');
+        if (!is_string($cachePath)) {
+            $cachePath = $pug->getOption('defaultCache');
         }
+        parent::__construct($files, $cachePath);
     }
 
     /**
@@ -59,11 +59,11 @@ class PugBladeCompiler extends BladeCompiler implements CompilerInterface
         if ($path && method_exists($this, 'setPath')) {
             $this->setPath($path);
         }
-        if (!$path) {
-            if (!method_exists($this, 'getPath')) {
-                throw new InvalidArgumentException('Missing path argument.');
-            }
+        if (!$path && method_exists($this, 'getPath')) {
             $path = $this->getPath();
+        }
+        if (!$path) {
+            throw new InvalidArgumentException('Missing path argument.');
         }
 
         $this->footer = array();

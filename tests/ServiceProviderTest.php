@@ -6,7 +6,7 @@ use Bkwld\LaravelPug\ServiceProvider;
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
 
-if (!interface_exists(Application::class)) {
+if (!interface_exists('Illuminate\Contracts\Foundation\Application')) {
     include_once __DIR__ . '/LaravelLegacyApplicationInterface.php';
     include_once __DIR__ . '/LaravelApplicationInterface.php';
 }

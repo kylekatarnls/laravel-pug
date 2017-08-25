@@ -6,6 +6,7 @@ namespace Bkwld\LaravelPug;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\Compiler;
 use Illuminate\View\Compilers\CompilerInterface;
+use InvalidArgumentException;
 use Pug\Pug;
 
 class PugCompiler extends Compiler implements CompilerInterface
@@ -25,11 +26,11 @@ class PugCompiler extends Compiler implements CompilerInterface
     public function __construct(Pug $pug, Filesystem $files)
     {
         $this->pug = $pug;
-        $this->files = $files;
-        $this->cachePath = $pug->getOption('cache');
-        if (!is_string($this->cachePath)) {
-            $this->cachePath = $pug->getOption('defaultCache');
+        $cachePath = $pug->getOption('cache');
+        if (!is_string($cachePath)) {
+            $cachePath = $pug->getOption('defaultCache');
         }
+        parent::__construct($files, $cachePath);
     }
 
     /**
@@ -53,6 +54,15 @@ class PugCompiler extends Compiler implements CompilerInterface
      */
     public function compile($path)
     {
+        if ($path && method_exists($this, 'setPath')) {
+            $this->setPath($path);
+        }
+        if (!$path && method_exists($this, 'getPath')) {
+            $path = $this->getPath();
+        }
+        if (!$path) {
+            throw new InvalidArgumentException('Missing path argument.');
+        }
         if ($this->cachePath) {
             $contents = $this->pug->compile($this->files->get($path), $path);
             $this->files->put($this->getCompiledPath($path), $contents);
