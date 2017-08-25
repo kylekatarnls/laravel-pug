@@ -6,6 +6,11 @@ use Bkwld\LaravelPug\ServiceProvider;
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
 
+if (!interface_exists(Application::class)) {
+    include_once __DIR__ . '/LaravelLegacyApplicationInterface.php';
+    include_once __DIR__ . '/LaravelApplicationInterface.php';
+}
+
 class MyApp implements Application
 {
     const VERSION = '5.0.0';
