@@ -242,7 +242,7 @@ class Laravel4ServiceProvider extends ServiceProvider
 {
     protected $currentPackage;
 
-    public function package($package)
+    public function package($package, $namespace = null, $path = null)
     {
         $this->currentPackage = $package;
     }
@@ -274,7 +274,7 @@ class Laravel5ServiceProvider extends ServiceProvider
         return $this->pub;
     }
 
-    public function publishes(array $pub, $group = NULL)
+    public function publishes(array $pub, $group = null)
     {
         $this->pub = $pub;
     }
@@ -380,7 +380,7 @@ class ServiceProviderTest extends \PHPUnit_Framework_TestCase
             'Bkwld\LaravelPug\PugBladeCompiler',
             $this->app->getSingleton('Bkwld\LaravelPug\PugBladeCompiler')
         );
-        self::assertSame('/views', $defaultCache);
+        self::assertStringEndsWith('/views', $defaultCache);
     }
 
     /**
@@ -420,7 +420,7 @@ class ServiceProviderTest extends \PHPUnit_Framework_TestCase
             'Bkwld\LaravelPug\PugBladeCompiler',
             $app->getSingleton('Bkwld\LaravelPug\PugBladeCompiler')
         );
-        self::assertSame('/framework/views', $defaultCache);
+        self::assertStringEndsWith('/framework/views', $defaultCache);
         self::assertCount(2, $configs);
         self::assertStringEndsWith('config.php', $configs[0]);
         self::assertSame('laravel-pug', $configs[1]);
